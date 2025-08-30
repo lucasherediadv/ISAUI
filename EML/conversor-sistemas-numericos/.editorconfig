@@ -1,0 +1,40 @@
+# Este es el archivo .editorconfig para el proyecto de conversor numérico.
+# Define un estilo de código consistente para todos los desarrolladores.
+
+# Reglas generales para todos los archivos del proyecto
+[*.{cs,json,ini}]
+# Usa la codificación de caracteres UTF-8 sin la marca de orden de bytes (BOM).
+charset = utf-8
+
+# Elimina el espacio en blanco al final de la línea al guardar.
+trim_trailing_whitespace = true
+
+# Asegura que cada archivo termine con una línea en blanco.
+insert_final_newline = true
+
+# Define la indentación con 4 espacios.
+indent_style = space
+indent_size = 4
+
+# Reglas específicas para archivos de C#
+[*.cs]
+# Usa terminaciones de línea de estilo Unix (LF), esenciales para Linux.
+end_of_line = lf
+
+# Estilos de C# de la convención de nombres de .NET
+csharp_style_namespace_declarations = file_scoped:warning
+
+# Preferencias de lenguaje
+# Usa "var" cuando el tipo es obvio.
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# Usa "this." para acceder a miembros de la clase.
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_expression_bodied_methods = false:suggestion
+csharp_style_expression_bodied_constructors = false:suggestion
+
+# Estilo de formato
+# Coloca las llaves en una nueva línea.
+csharp_new_line_before_open_brace = all
