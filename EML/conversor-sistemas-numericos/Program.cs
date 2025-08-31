@@ -35,7 +35,7 @@ public class Program
             // Captura la excepción cuando el usuario decide salir del programa.
             catch (OperationCanceledException)
             {
-                Console.WriteLine("Saliendo del programa. ¡Hasta pronto!");
+                Console.WriteLine("\nSaliendo del programa. ¡Gracias por usar el conversor!\n");
                 break; // Sale del bucle 'while'.
             }
             // Captura las excepciones de argumentos inválidos o de formato, unificando el manejo de errores.

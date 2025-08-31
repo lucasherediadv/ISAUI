@@ -74,7 +74,7 @@ public static class InterfazUsuario
     {
         while (true)
         {
-            Console.Write($"\nIngrese el número en {sistema.ToString().ToLower()}:");
+            Console.Write($"\nIngrese el número en {sistema.ToString().ToLower()}:\n");
             string? numeroStr = PedirEntrada();
 
             // Llama al método de validación mejorado.
@@ -125,7 +125,7 @@ public static class InterfazUsuario
     {
         while (true)
         {
-            Console.Write("¿Desea realizar otra conversión? (sí/no):");
+            Console.Write("¿Desea realizar otra conversión? (sí/no):\n");
             string? respuesta = PedirEntrada();
 
             if (respuesta?.ToLower() == "si" || respuesta?.ToLower() == "s" || respuesta?.ToLower() == "sí")
@@ -134,7 +134,7 @@ public static class InterfazUsuario
             }
             else if (respuesta?.ToLower() == "no" || respuesta?.ToLower() == "n")
             {
-                Console.WriteLine("Saliendo del programa. ¡Gracias por usar el conversor!");
+                Console.WriteLine("\nSaliendo del programa. ¡Gracias por usar el conversor!\n");
                 return false;
             }
             else
