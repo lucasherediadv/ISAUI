@@ -1,40 +1,102 @@
-# Este es el archivo .editorconfig para el proyecto de conversor numérico.
-# Define un estilo de código consistente para todos los desarrolladores.
+# Este archivo define los estilos y formatos de código para un proyecto.
+# EditorConfig ayuda a mantener la coherencia sin importar el editor o IDE que uses.
 
-# Reglas generales para todos los archivos del proyecto
-[*.{cs,json,ini}]
-# Usa la codificación de caracteres UTF-8 sin la marca de orden de bytes (BOM).
-charset = utf-8
+# La línea 'root = true' le dice a los editores que dejen de buscar archivos .editorconfig
+# en directorios superiores una vez que encuentren este.
+root = true
 
-# Elimina el espacio en blanco al final de la línea al guardar.
-trim_trailing_whitespace = true
+# ====================================================================
+# SECCIÓN GLOBAL - APLICABLE A TODOS LOS ARCHIVOS DEL PROYECTO
+# ====================================================================
 
-# Asegura que cada archivo termine con una línea en blanco.
-insert_final_newline = true
-
-# Define la indentación con 4 espacios.
-indent_style = space
-indent_size = 4
-
-# Reglas específicas para archivos de C#
-[*.cs]
-# Usa terminaciones de línea de estilo Unix (LF), esenciales para Linux.
+# La sección '*' (wildcard) aplica estas reglas a todos los archivos del proyecto.
+# Esto es útil para mantener una consistencia básica en el proyecto completo.
+[*]
+# Tipo de terminación de línea: 'lf' (Line Feed), el estándar en sistemas Linux y macOS.
+# Evita problemas de compatibilidad con las terminaciones de línea de Windows ('crlf').
 end_of_line = lf
 
-# Estilos de C# de la convención de nombres de .NET
-csharp_style_namespace_declarations = file_scoped:warning
+# Codificación de caracteres del archivo. UTF-8 es el estándar moderno.
+charset = utf-8
 
-# Preferencias de lenguaje
-# Usa "var" cuando el tipo es obvio.
+# Estilo de indentación: 'space' (espacios) en lugar de 'tab'.
+# Es la convención más común en la mayoría de los proyectos de C#.
+indent_style = space
+
+# Tamaño de la indentación, en número de caracteres. En C#, el estándar es 4 espacios.
+indent_size = 4
+
+# Elimina los espacios en blanco al final de las líneas. Ayuda a mantener el código limpio.
+trim_trailing_whitespace = true
+
+# Asegura que el archivo termine con una nueva línea.
+# Esto es una buena práctica y ayuda con las herramientas de control de versiones como Git.
+insert_final_newline = true
+
+# ====================================================================
+# SECCIÓN ESPECÍFICA DE C#
+# ====================================================================
+
+# La sección '[*.cs]' aplica estas reglas solo a los archivos con la extensión .cs.
+[*.cs]
+# --------------------------------------------------------------------
+# Reglas de estilo de código (prefijos: 'dotnet_style_...' y 'csharp_style_...')
+# --------------------------------------------------------------------
+
+# Nivel de gravedad para diagnósticos de .NET Analyzer.
+# 'warning' significa que el editor o IDE mostrará una advertencia si no se cumple la regla.
+dotnet_analyzer_diagnostic_severity = warning
+
+# Preferir el uso de 'this.' para calificar campos, propiedades, métodos y eventos.
+# El valor 'true:suggestion' significa que el editor te sugerirá esta convención.
+dotnet_style_qualification_for_field = true:suggestion
+dotnet_style_qualification_for_property = true:suggestion
+dotnet_style_qualification_for_method = true:suggestion
+dotnet_style_qualification_for_event = true:suggestion
+
+# Preferir el uso de 'var' para tipos de C# incorporados (ej. int, string).
 csharp_style_var_for_built_in_types = true:suggestion
-csharp_style_var_when_type_is_apparent = true:suggestion
-csharp_style_var_elsewhere = false:suggestion
 
-# Usa "this." para acceder a miembros de la clase.
-csharp_style_expression_bodied_properties = true:suggestion
-csharp_style_expression_bodied_methods = false:suggestion
-csharp_style_expression_bodied_constructors = false:suggestion
+# Usar nombres de miembros de tipos anónimos y tuplas inferidos por el compilador.
+csharp_style_inferred_anonymous_type_member_names = true:suggestion
+csharp_style_inferred_tuple_names = true:suggestion
 
-# Estilo de formato
-# Coloca las llaves en una nueva línea.
+# Preferir las declaraciones de espacio de nombres a nivel de archivo.
+# Esta es una característica moderna de .NET 6+ para reducir la anidación.
+csharp_style_namespace_declarations = file_scoped
+
+# Preferir siempre las llaves, incluso para sentencias de una sola línea (ej. `if`).
+csharp_style_prefer_braces = true:suggestion
+
+# Colocar las directivas 'using' fuera del 'namespace'.
+csharp_style_using_directive_placement = outside_namespace
+
+# --------------------------------------------------------------------
+# Reglas de formato de código (controlan los saltos de línea, etc.)
+# --------------------------------------------------------------------
+
+# Colocar un salto de línea antes de la llave de apertura en todos los casos.
 csharp_new_line_before_open_brace = all
+
+# Colocar un salto de línea antes de 'else', 'catch' y 'finally'.
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+
+# Colocar saltos de línea antes de los miembros en inicializadores de objetos y colecciones.
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_collection_initializers = true
+
+# Colocar un salto de línea antes de los miembros en tipos anónimos.
+csharp_new_line_before_members_in_anonymous_types = true
+
+# NO colocar un salto de línea antes de los miembros en listas de atributos.
+csharp_new_line_before_members_in_attribute_lists = false
+
+# No permitir bloques de una sola línea (ej. `if (...) { ... }`).
+# La llave de apertura debe estar en una nueva línea.
+csharp_preserve_single_line_blocks = false
+
+# No permitir sentencias de una sola línea (ej. `if (...) return;`).
+# Fomenta el uso de bloques `{}`.
+csharp_preserve_single_line_statements = false
