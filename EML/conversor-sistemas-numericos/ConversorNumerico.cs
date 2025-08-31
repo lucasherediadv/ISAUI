@@ -56,7 +56,7 @@ public static class ConversorNumerico
 
         int baseOrigen = GetBaseFromSistema(sistema);
         string[] partes = numeroSinSigno.Split('.');
-        
+
         if (partes.Length > 2)
         {
             mensajeError = "El número tiene más de un punto decimal.";
@@ -221,11 +221,16 @@ public static class ConversorNumerico
     {
         switch (sistema)
         {
-            case SistemaNumerico.Binario: return 2;
-            case SistemaNumerico.Octal: return 8;
-            case SistemaNumerico.Decimal: return 10;
-            case SistemaNumerico.Hexadecimal: return 16;
-            default: throw new ArgumentException("Sistema numérico no soportado.");
+            case SistemaNumerico.Binario:
+                return 2;
+            case SistemaNumerico.Octal:
+                return 8;
+            case SistemaNumerico.Decimal:
+                return 10;
+            case SistemaNumerico.Hexadecimal:
+                return 16;
+            default:
+                throw new ArgumentException("Sistema numérico no soportado.");
         }
     }
 }
