@@ -3,9 +3,13 @@
 // Maneja la entrada y salida de datos a través de la consola.
 
 using System;
+using System.Linq;
 
 public static class InterfazUsuario
 {
+    // Variable para controlar si es la primera vez que se muestra el mensaje de salir.
+    private static bool _esPrimeraEjecucion = true;
+
     /// <summary>
     /// Permite al usuario seleccionar un sistema numérico de una lista.
     /// </summary>
@@ -19,45 +23,40 @@ public static class InterfazUsuario
             Console.WriteLine($"\nSeleccione el sistema de {tipo}: ");
 
             // Define las opciones de sistemas numéricos disponibles.
-            var opciones = new (SistemaNumerico sistema, string nombre)[]
-            {
-                (SistemaNumerico.Decimal, "Decimal"),
-                (SistemaNumerico.Binario, "Binario"),
-                (SistemaNumerico.Octal, "Octal"),
-                (SistemaNumerico.Hexadecimal, "Hexadecimal")
-            };
+            var opciones = Enum.GetValues(typeof(SistemaNumerico))
+                               .Cast<SistemaNumerico>()
+                               .Select(s => (sistema: s, nombre: s.ToString()))
+                               .Where(o => o.sistema != sistemaExcluido)
+                               .ToList();
 
-            for (int i = 0; i < opciones.Length; i++)
+            for (int i = 0; i < opciones.Count; i++)
             {
-                // Muestra la opción solo si no es el sistema excluido.
-                if (opciones[i].sistema != sistemaExcluido)
-                {
-                    Console.WriteLine($"{opciones[i].sistema.GetHashCode()}) {opciones[i].nombre}");
-                }
+                Console.WriteLine($"{opciones[i].sistema.GetHashCode()}) {opciones[i].nombre}");
             }
 
-            Console.WriteLine("\n(Escriba 'salir' para finalizar la ejecución del programa)");
-            Console.Write("\n> ");
+            // Muestra el mensaje de 'salir' solo la primera vez.
+            if (_esPrimeraEjecucion)
+            {
+                Console.WriteLine("\n(Escriba 'salir' para finalizar la ejecución del programa)");
+                _esPrimeraEjecucion = false;
+            }
 
-            string? entrada = Console.ReadLine();
+            string? entradaProcesada = PedirEntrada();
 
-            if (string.IsNullOrWhiteSpace(entrada))
+            if (string.IsNullOrWhiteSpace(entradaProcesada))
             {
                 MostrarError("La entrada no puede estar vacía.");
                 continue;
             }
 
-            string entradaProcesada = entrada.Trim().ToLower();
-
-            if (entradaProcesada == "salir")
+            if (entradaProcesada.ToLower() == "salir")
             {
                 throw new OperationCanceledException();
             }
 
-            if (int.TryParse(entradaProcesada, out int opcion))
+            if (int.TryParse(entradaProcesada, out int opcion) && Enum.IsDefined(typeof(SistemaNumerico), opcion))
             {
-                // Valida que la opción esté en el rango correcto y no sea el sistema excluido.
-                if (opcion >= 1 && opcion <= 4 && (SistemaNumerico)opcion != sistemaExcluido)
+                if (opciones.Any(o => o.sistema == (SistemaNumerico)opcion))
                 {
                     return (SistemaNumerico)opcion;
                 }
@@ -75,29 +74,17 @@ public static class InterfazUsuario
     {
         while (true)
         {
-            Console.Write($"Ingrese el número en {sistema}\n-> ");
-            string? numeroStr = Console.ReadLine()?.Trim();
+            Console.Write($"\nIngrese el número en {sistema.ToString().ToLower()}:");
+            string? numeroStr = PedirEntrada();
 
-            // Valida si la entrada es nula o vacía.
-            if (string.IsNullOrEmpty(numeroStr))
+            // Llama al método de validación mejorado.
+            if (ConversorNumerico.ValidarNumeroParaBase(numeroStr, sistema, out string mensajeError))
             {
-                MostrarError("La entrada no puede estar vacía.");
-                continue;
+                return numeroStr;
             }
-
-            // Intenta validar el número con la lógica del ConversorNumerico.
-            try
+            else
             {
-                ConversorNumerico.ValidarNumeroParaBase(numeroStr, sistema);
-                return numeroStr; // Devuelve el número si la validación es exitosa.
-            }
-            catch (ArgumentException ex)
-            {
-                MostrarError(ex.Message);
-            }
-            catch (FormatException ex)
-            {
-                MostrarError(ex.Message);
+                MostrarError(mensajeError);
             }
         }
     }
@@ -105,12 +92,18 @@ public static class InterfazUsuario
     /// <summary>
     /// Muestra el resultado de la conversión en la consola.
     /// </summary>
+    /// <param name="numeroOriginal">El número que el usuario ingresó.</param>
+    /// <param name="origen">El sistema de origen de la conversión.</param>
+    /// <param name="destino">El sistema de destino de la conversión.</param>
     /// <param name="resultado">La cadena de texto que contiene el resultado a mostrar.</param>
-    public static void MostrarResultado(string resultado)
+    public static void MostrarResultado(string numeroOriginal, SistemaNumerico origen, SistemaNumerico destino, string resultado)
     {
+        Console.WriteLine();
+        Console.Write($"El número '{numeroOriginal}' en sistema {origen.ToString().ToLower()} es '");
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"\nResultado: {resultado}\n");
+        Console.Write(resultado);
         Console.ResetColor();
+        Console.WriteLine($"' en sistema {destino.ToString().ToLower()}.\n");
     }
 
     /// <summary>
@@ -132,23 +125,34 @@ public static class InterfazUsuario
     {
         while (true)
         {
-            Console.WriteLine("\n¿Desea realizar otra conversión? (sí/no)");
-            Console.Write("> ");
-            string? respuesta = Console.ReadLine()?.Trim().ToLower();
+            Console.Write("¿Desea realizar otra conversión? (sí/no):");
+            string? respuesta = PedirEntrada();
 
-            if (respuesta == "si" || respuesta == "s" || respuesta == "sí")
+            if (respuesta?.ToLower() == "si" || respuesta?.ToLower() == "s" || respuesta?.ToLower() == "sí")
             {
                 return true;
             }
-            else if (respuesta == "no" || respuesta == "n")
+            else if (respuesta?.ToLower() == "no" || respuesta?.ToLower() == "n")
             {
-                Console.WriteLine("Saliendo del programa. ¡Hasta pronto!");
+                Console.WriteLine("Saliendo del programa. ¡Gracias por usar el conversor!");
                 return false;
             }
             else
             {
-                MostrarError("Respuesta no válida. Por favor, escriba 'sí' o 'no'.");
+                MostrarError("Respuesta inválida. Por favor, escriba 'sí' o 'no'.");
             }
         }
+    }
+
+    /// <summary>
+    /// Método auxiliar para estandarizar la solicitud de entrada del usuario.
+    /// </summary>
+    /// <returns>La entrada del usuario como una cadena de texto.</returns>
+    private static string PedirEntrada()
+    {
+        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+        Console.Write("\n>>> ");
+        Console.ResetColor();
+        return Console.ReadLine()?.Trim() ?? string.Empty;
     }
 }

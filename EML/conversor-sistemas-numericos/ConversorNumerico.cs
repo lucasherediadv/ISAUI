@@ -4,6 +4,8 @@
 
 using System;
 using System.Text;
+using System.Globalization;
+using System.Numerics;
 
 /// <summary>
 /// Enumeración para representar los sistemas numéricos soportados.
@@ -26,44 +28,53 @@ public static class ConversorNumerico
     /// </summary>
     /// <param name="numeroStr">La cadena de texto a validar.</param>
     /// <param name="sistema">El sistema numérico de referencia.</param>
-    /// <exception cref="FormatException">Se lanza si el número no tiene el formato correcto.</exception>
-    /// <exception cref="ArgumentException">Se lanza si el número contiene dígitos inválidos para la base.</exception>
-    public static void ValidarNumeroParaBase(string numeroStr, SistemaNumerico sistema)
+    /// <param name="mensajeError">Un parámetro de salida que contiene el mensaje de error si la validación falla.</param>
+    /// <returns>Verdadero si la validación es exitosa; de lo contrario, falso.</returns>
+    public static bool ValidarNumeroParaBase(string numeroStr, SistemaNumerico sistema, out string mensajeError)
     {
-        // Si el sistema es decimal, usa TryParse para la validación.
-        if (sistema == SistemaNumerico.Decimal)
+        mensajeError = string.Empty;
+
+        if (string.IsNullOrEmpty(numeroStr))
         {
-            if (!double.TryParse(numeroStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
-            {
-                throw new FormatException("El número decimal ingresado no tiene un formato válido.");
-            }
-            return;
+            mensajeError = "La entrada no puede estar vacía.";
+            return false;
         }
 
-        int baseOrigen = GetBaseFromSistema(sistema);
-
-        // Separa el signo negativo para la validación.
+        numeroStr = numeroStr.Replace(',', '.');
         bool esNegativo = numeroStr.StartsWith('-');
         string numeroSinSigno = esNegativo ? numeroStr.Substring(1) : numeroStr;
 
-        // Comprueba si solo se ingresó el signo negativo.
-        if (esNegativo && numeroSinSigno.Length == 0)
+        if (sistema == SistemaNumerico.Decimal)
         {
-            throw new ArgumentException("No se puede ingresar solo un signo.");
+            if (!double.TryParse(numeroSinSigno, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+            {
+                mensajeError = "El número decimal ingresado no tiene un formato válido.";
+                return false;
+            }
+            return true;
         }
 
-        // Comprueba si hay un signo en medio del número.
-        if (numeroSinSigno.IndexOf('-') != -1)
+        int baseOrigen = GetBaseFromSistema(sistema);
+        string[] partes = numeroSinSigno.Split('.');
+        
+        if (partes.Length > 2)
         {
-            throw new ArgumentException("El signo '-' solo puede aparecer al principio del número.");
+            mensajeError = "El número tiene más de un punto decimal.";
+            return false;
         }
 
-        // Valida que cada dígito sea válido para la base.
-        foreach (char c in numeroSinSigno)
+        string parteEnteraStr = partes[0];
+        string parteFraccionariaStr = partes.Length > 1 ? partes[1] : "";
+
+        foreach (char c in parteEnteraStr + parteFraccionariaStr)
         {
-            if (c == '.' || c == ',') continue;
-            ObtenerValorDeDigito(c, baseOrigen, sistema);
+            if (DIGITOS_HEX.IndexOf(char.ToUpper(c)) == -1 || DIGITOS_HEX.IndexOf(char.ToUpper(c)) >= baseOrigen)
+            {
+                mensajeError = $"El dígito '{c}' no es válido para el sistema {sistema}.";
+                return false;
+            }
         }
+        return true;
     }
 
     /// <summary>
@@ -87,7 +98,6 @@ public static class ConversorNumerico
     /// <param name="numeroStr">El número a convertir.</param>
     /// <param name="sistemaOrigen">El sistema numérico de origen.</param>
     /// <returns>El valor decimal del número.</returns>
-    /// <exception cref="FormatException">Se lanza si el formato del número es incorrecto.</exception>
     private static double ConvertirADecimal(string numeroStr, SistemaNumerico sistemaOrigen)
     {
         bool esNegativo = numeroStr.StartsWith('-');
@@ -95,9 +105,7 @@ public static class ConversorNumerico
 
         if (sistemaOrigen == SistemaNumerico.Decimal)
         {
-            if (double.TryParse(numeroSinSigno, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double res))
-                return esNegativo ? -res : res;
-            throw new FormatException("El número decimal ingresado no tiene un formato válido.");
+            return esNegativo ? -double.Parse(numeroSinSigno, CultureInfo.InvariantCulture) : double.Parse(numeroSinSigno, CultureInfo.InvariantCulture);
         }
 
         int baseOrigen = GetBaseFromSistema(sistemaOrigen);
@@ -110,7 +118,7 @@ public static class ConversorNumerico
 
         for (int i = parteEnteraStr.Length - 1; i >= 0; i--)
         {
-            int valorDigito = ObtenerValorDeDigito(parteEnteraStr[i], baseOrigen, sistemaOrigen);
+            int valorDigito = ObtenerValorDeDigito(parteEnteraStr[i]);
             valorEntero += valorDigito * potencia;
             potencia *= baseOrigen;
         }
@@ -119,7 +127,7 @@ public static class ConversorNumerico
         double factor = 1.0 / baseOrigen;
         for (int i = 0; i < parteFraccionariaStr.Length; i++)
         {
-            int valorDigito = ObtenerValorDeDigito(parteFraccionariaStr[i], baseOrigen, sistemaOrigen);
+            int valorDigito = ObtenerValorDeDigito(parteFraccionariaStr[i]);
             valorFraccionario += valorDigito * factor;
             factor /= baseOrigen;
         }
@@ -160,7 +168,7 @@ public static class ConversorNumerico
         int baseDestino = GetBaseFromSistema(sistemaDestino);
         if (baseDestino == 10)
         {
-            return numeroDecimal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            return numeroDecimal.ToString(CultureInfo.InvariantCulture);
         }
 
         long parteEntera = (long)Math.Truncate(numeroDecimal);
@@ -195,21 +203,13 @@ public static class ConversorNumerico
     }
 
     /// <summary>
-    /// Obtiene el valor numérico de un dígito en una base específica.
+    /// Obtiene el valor numérico de un dígito en base 16.
     /// </summary>
     /// <param name="digito">El carácter que representa el dígito.</param>
-    /// <param name="baseNum">La base numérica.</param>
-    /// <param name="sistema">El sistema numérico.</param>
     /// <returns>El valor numérico del dígito.</returns>
-    /// <exception cref="ArgumentException">Se lanza si el dígito no es válido para la base dada.</exception>
-    private static int ObtenerValorDeDigito(char digito, int baseNum, SistemaNumerico sistema)
+    private static int ObtenerValorDeDigito(char digito)
     {
-        int valor = DIGITOS_HEX.IndexOf(char.ToUpper(digito));
-        if (valor == -1 || valor >= baseNum)
-        {
-            throw new ArgumentException($"El dígito '{digito}' no es válido para el sistema {sistema}.");
-        }
-        return valor;
+        return DIGITOS_HEX.IndexOf(char.ToUpper(digito));
     }
 
     /// <summary>
@@ -217,7 +217,6 @@ public static class ConversorNumerico
     /// </summary>
     /// <param name="sistema">La enumeración del sistema numérico.</param>
     /// <returns>El valor entero de la base.</returns>
-    /// <exception cref="ArgumentException">Se lanza si el sistema numérico no es soportado.</exception>
     private static int GetBaseFromSistema(SistemaNumerico sistema)
     {
         switch (sistema)

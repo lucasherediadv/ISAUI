@@ -15,7 +15,6 @@ public class Program
         // El bucle 'while' permite que el programa se ejecute continuamente.
         while (true)
         {
-            // El bloque 'try-catch' maneja cualquier excepción que pueda ocurrir durante la conversión.
             try
             {
                 // Paso 1: Selecciona el sistema numérico de origen.
@@ -31,29 +30,24 @@ public class Program
                 string resultado = ConversorNumerico.Convertir(numeroStr, origen, destino);
 
                 // Paso 5: Muestra el resultado de la conversión al usuario.
-                InterfazUsuario.MostrarResultado(resultado);
+                InterfazUsuario.MostrarResultado(numeroStr, origen, destino, resultado);
             }
             // Captura la excepción cuando el usuario decide salir del programa.
             catch (OperationCanceledException)
             {
-                Console.WriteLine("Saliendo del programa.");
+                Console.WriteLine("Saliendo del programa. ¡Hasta pronto!");
                 break; // Sale del bucle 'while'.
             }
-            // Captura las excepciones de argumentos inválidos, como dígitos incorrectos.
-            catch (ArgumentException ex)
-            {
-                InterfazUsuario.MostrarError(ex.Message);
-            }
-            // Captura las excepciones de formato, como un número mal formado.
-            catch (FormatException ex)
+            // Captura las excepciones de argumentos inválidos o de formato, unificando el manejo de errores.
+            catch (Exception ex) when (ex is ArgumentException || ex is FormatException)
             {
                 InterfazUsuario.MostrarError(ex.Message);
             }
 
-            // Pregunta al usuario si desea realizar otra conversión.
+            // Pregunta al usuario si desea realizar otra conversión y sale si la respuesta es negativa.
             if (!InterfazUsuario.ContinuarPrograma())
             {
-                break; // Sale del bucle si el usuario no desea continuar.
+                break;
             }
         }
     }
