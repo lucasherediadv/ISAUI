@@ -20,7 +20,7 @@ public static class InterfazUsuario
     {
         while (true)
         {
-            Console.WriteLine($"\nSeleccione el sistema de {tipo} (indique una opción):\n");
+            Console.WriteLine($"\nSeleccione el número que corresponda al sistema de {tipo}:\n");
 
             // Define las opciones de sistemas numéricos disponibles.
             var opciones = Enum.GetValues(typeof(SistemaNumerico))
@@ -37,7 +37,7 @@ public static class InterfazUsuario
             // Muestra el mensaje de 'salir' solo la primera vez.
             if (_esPrimeraEjecucion)
             {
-                Console.WriteLine("\nEscriba 'salir' para finalizar la ejecución del programa");
+                Console.WriteLine("\nEscriba 'salir' para finalizar la ejecución del programa.");
                 _esPrimeraEjecucion = false;
             }
 
