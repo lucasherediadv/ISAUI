@@ -127,6 +127,14 @@ public static class ConversorNumerico
         double valorEntero = 0;
         long potencia = 1;
 
+				// A continuación, el bucle 'for' que procesa la parte entera.
+				// La conversión se basa en la suma de cada dígito multiplicado por la potencia de la base.
+				// Para la parte entera, se recorre el número de derecha a izquierda.
+				// Por ejemplo, para el número binario 101:
+				// 1. Primer dígito (el último '1'): Se multiplica por 2^0 (potencia = 1).
+				// 2. Segundo dígito ('0'): Se multiplica por 2^1 (potencia se convierte en 2).
+				// 3. Tercer dígito (el primer '1'): Se multiplica por 2^2 (potencia se convierte en 4).
+				// La suma de estos productos (1*1 + 0*2 + 1*4) da el resultado decimal 5.
         for (int i = parteEnteraStr.Length - 1; i >= 0; i--)
         {
             int valorDigito = ObtenerValorDeDigito(parteEnteraStr[i]);
@@ -136,7 +144,16 @@ public static class ConversorNumerico
 
         double valorFraccionario = 0;
         double factor = 1.0 / baseOrigen;
-        for (int i = 0; i < parteFraccionariaStr.Length; i++)
+
+				// A continuación, el bucle 'for' que procesa la parte fraccionaria.
+				// La conversión se basa en la suma de cada dígito fraccionario
+				// multiplicado por las potencias negativas de la base.
+				// Por ejemplo, para el número binario 0.101:
+				// 1. Primer dígito ('1'): Se multiplica por 2^-1 (factor = 0.5).
+				// 2. Segundo dígito ('0'): Se multiplica por 2^-2 (factor = 0.25).
+				// 3. Tercer dígito ('1'): Se multiplica por 2^-3 (factor = 0.125).
+				// La suma de estos productos (1*0.5 + 0*0.25 + 1*0.125) da el resultado decimal 0.625.
+				for (int i = 0; i < parteFraccionariaStr.Length; i++)
         {
             int valorDigito = ObtenerValorDeDigito(parteFraccionariaStr[i]);
             valorFraccionario += valorDigito * factor;
