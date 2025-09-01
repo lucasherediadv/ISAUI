@@ -54,7 +54,7 @@ public static class ConversorNumerico
             return true;
         }
 
-        int baseOrigen = GetBaseFromSistema(sistema);
+        int baseOrigen = ObtenerBasePorSistema(sistema);
         string[] partes = numeroSinSigno.Split('.');
 
         if (partes.Length > 2)
@@ -108,7 +108,7 @@ public static class ConversorNumerico
             return esNegativo ? -double.Parse(numeroSinSigno, CultureInfo.InvariantCulture) : double.Parse(numeroSinSigno, CultureInfo.InvariantCulture);
         }
 
-        int baseOrigen = GetBaseFromSistema(sistemaOrigen);
+        int baseOrigen = ObtenerBasePorSistema(sistemaOrigen);
         string[] partes = numeroSinSigno.Split('.');
         string parteEnteraStr = partes[0];
         string parteFraccionariaStr = partes.Length > 1 ? partes[1] : "";
@@ -165,7 +165,7 @@ public static class ConversorNumerico
     /// <returns>La representación del número en el sistema de destino.</returns>
     private static string ConvertirDesdeDecimal(double numeroDecimal, SistemaNumerico sistemaDestino)
     {
-        int baseDestino = GetBaseFromSistema(sistemaDestino);
+        int baseDestino = ObtenerBasePorSistema(sistemaDestino);
         if (baseDestino == 10)
         {
             return numeroDecimal.ToString(CultureInfo.InvariantCulture);
@@ -217,7 +217,7 @@ public static class ConversorNumerico
     /// </summary>
     /// <param name="sistema">La enumeración del sistema numérico.</param>
     /// <returns>El valor entero de la base.</returns>
-    private static int GetBaseFromSistema(SistemaNumerico sistema)
+    private static int ObtenerBasePorSistema(SistemaNumerico sistema)
     {
         switch (sistema)
         {

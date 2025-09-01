@@ -77,7 +77,7 @@ public static class InterfazUsuario
             Console.Write($"\nIngrese el número en {sistema.ToString().ToLower()}:\n");
             string? numeroStr = PedirEntrada();
 
-            // Llama al método de validación mejorado.
+            // Llama al método de validación.
             if (ConversorNumerico.ValidarNumeroParaBase(numeroStr, sistema, out string mensajeError))
             {
                 return numeroStr;
