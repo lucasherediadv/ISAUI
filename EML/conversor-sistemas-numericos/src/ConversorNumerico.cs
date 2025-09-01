@@ -87,21 +87,34 @@ public static class ConversorNumerico
         }
         return true;
     }
+		/// <summary>
+		/// Convierte un número de un sistema a otro. Este método actúa como un coordinador,
+		/// llamando a otras funciones para realizar la conversión en dos pasos.
+		/// </summary>
+		/// <param name="numeroStr">El número a convertir en formato de cadena.</param>
+		/// <param name="origen">El sistema numérico de origen.</param>
+		/// <param name="destino">El sistema numérico de destino.</param>
+		/// <returns>El número convertido en formato de cadena.</returns>
+		public static string Convertir(string numeroStr, SistemaNumerico origen, SistemaNumerico destino)
+		{
+			// Paso 1: Usar la coma decimal para garantizar que el formato de entrada
+			// sea compatible con los métodos internos, que esperan un punto ('.')
+			// como separador decimal.
+			numeroStr = numeroStr.Replace(',', '.');
 
-    /// <summary>
-    /// Convierte un número de un sistema a otro.
-    /// </summary>
-    /// <param name="numeroStr">El número a convertir en formato de cadena.</param>
-    /// <param name="origen">El sistema numérico de origen.</param>
-    /// <param name="destino">El sistema numérico de destino.</param>
-    /// <returns>El número convertido en formato de cadena.</returns>
-    public static string Convertir(string numeroStr, SistemaNumerico origen, SistemaNumerico destino)
-    {
-        numeroStr = numeroStr.Replace(',', '.');
-        double numeroDecimal = ConvertirADecimal(numeroStr, origen);
-        string resultado = ConvertirDesdeDecimalConSigno(numeroDecimal, destino);
-        return resultado.Replace('.', ',');
-    }
+			// Paso 2: Primero, se convierte
+			// el número de cualquier base a su representación decimal. El sistema decimal
+			// funciona como un "puente" para todas las conversiones.
+			double numeroDecimal = ConvertirADecimal(numeroStr, origen);
+
+			// Paso 3: Una vez que el número está en formato decimal, se convierte
+			// desde decimal a la base de destino solicitada.
+			string resultado = ConvertirDesdeDecimalConSigno(numeroDecimal, destino);
+
+			// Paso 4: Devolver el resultado final, reemplazando el punto decimal ('.')
+			// por una coma (',') para que el formato de salida sea consistente
+			return resultado.Replace('.', ',');
+		}
 
     /// <summary>
     /// Convierte un número de cualquier base a su representación decimal.
@@ -203,7 +216,15 @@ public static class ConversorNumerico
         double parteFraccionaria = numeroDecimal - parteEntera;
 
         var resultadoEntero = new StringBuilder();
-        if (parteEntera == 0)
+
+				// Este bucle 'while' convierte la parte entera del número decimal a la nueva base.
+				// Utiliza el método de "división sucesiva".
+				// Se divide el número entre la base de destino,
+				// y el residuo de la división es el siguiente dígito en la nueva base.
+				// Este proceso se repite hasta que el número sea 0.
+				// Los dígitos se obtienen de derecha a izquierda, por lo que se insertan al inicio
+				// del StringBuilder para mantener el orden correcto.
+				if (parteEntera == 0)
         {
             resultadoEntero.Append('0');
         }
@@ -219,7 +240,16 @@ public static class ConversorNumerico
         if (parteFraccionaria > 0)
         {
             resultadoEntero.Append('.');
-            for (int i = 0; i < PRECISION_FRACCIONARIA && parteFraccionaria > 0; i++)
+
+						// Este bucle 'for' convierte la parte fraccionaria del número.
+						// Utiliza el método de "multiplicación sucesiva".
+						// Se multiplica la fracción por la base de destino,
+						// y la parte entera del resultado de la multiplicación es el siguiente dígito
+						// de la fracción en la nueva base.
+						// Este proceso se repite hasta que la parte fraccionaria se vuelva 0 o se
+						// alcance la precisión máxima definida (PRECISION_FRACCIONARIA).
+						// Los dígitos se obtienen en el orden correcto, por lo que se añaden al final del StringBuilder.
+						for (int i = 0; i < PRECISION_FRACCIONARIA && parteFraccionaria > 0; i++)
             {
                 parteFraccionaria *= baseDestino;
                 int digito = (int)Math.Truncate(parteFraccionaria);
