@@ -38,7 +38,7 @@ public class Program
                 Console.WriteLine("\nSaliendo del programa. ¡Gracias por usar el conversor!\n");
                 break; // Sale del bucle 'while'.
             }
-            // Captura las excepciones de argumentos inválidos o de formato, unificando el manejo de errores.
+            // Captura las excepciones de argumentos inválidos o de formato.
             catch (Exception ex) when (ex is ArgumentException || ex is FormatException)
             {
                 InterfazUsuario.MostrarError(ex.Message);
