@@ -42,6 +42,10 @@ public static class ConversorNumerico
 
         numeroStr = numeroStr.Replace(',', '.');
         bool esNegativo = numeroStr.StartsWith('-');
+
+        // Si esNegativo es verdadero, entonces quita el primer carácter de numeroStr
+        // y guarda el resto en numeroSinSigno.
+        // Si no, guarda numeroStr tal como esta.
         string numeroSinSigno = esNegativo ? numeroStr.Substring(1) : numeroStr;
 
         if (sistema == SistemaNumerico.Decimal)
@@ -64,8 +68,15 @@ public static class ConversorNumerico
         }
 
         string parteEnteraStr = partes[0];
+
+        // Si partes.Length tieen mas de un elemento, se toma el segundo indice,
+        // la parte fraccionaria, si no hay parte fraccionaria, se asigna una
+        // cadena vacia
         string parteFraccionariaStr = partes.Length > 1 ? partes[1] : "";
 
+        // Se recorre cada carácter de la parte entera y fraccionaria del número,
+        // verificando que esté dentro del conjunto de dígitos válidos (DIGITOS_HEX)
+        // y que su valor no exceda la base del sistema (baseOrigen).
         foreach (char c in parteEnteraStr + parteFraccionariaStr)
         {
             if (DIGITOS_HEX.IndexOf(char.ToUpper(c)) == -1 || DIGITOS_HEX.IndexOf(char.ToUpper(c)) >= baseOrigen)
