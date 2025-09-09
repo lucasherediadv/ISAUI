@@ -13,6 +13,3 @@ Calcular:
 * Porcentaje de alumnos promocionados, regulares y libres
 
 Además, imprimir un listado con los alumnos promocionados, regulares y libres.
-
-
-
