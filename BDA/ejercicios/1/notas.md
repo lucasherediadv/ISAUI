@@ -24,7 +24,7 @@ ADD <NombreColumna1> INT,
 DML (Lenguaje de Manipulacion de Datos): Se utiliza para manipular los datos dentro de las tablas.
 ```sql
 -- Para agregar nuevos registros a una tabla.
-INSERT INTO <NombreTabla> (<NombreColumna1>, <Nombrecolumna2>) VALUES ('<ValorColumna1>, '<ValorColumna2>');
+INSERT INTO <NombreTabla> (<NombreColumna1>, <Nombrecolumna2>) VALUES ('<ValorColumna1>', '<ValorColumna2>');
 
 -- Para consultar y recuperar datos.
 SELECT <Columna1> <Columna2> ...
