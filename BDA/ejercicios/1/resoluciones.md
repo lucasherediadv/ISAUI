@@ -18,7 +18,7 @@ CREATE TABLE Cliente (
     CodBarrio INT,
     CodCiudad INT,
     FOREIGN KEY (CodCiudad) REFERENCES Ciudad(CodCiudad),
-    FOREIGN KEY (CodBarrio) REFERENCES Barrio(CodBarrio)
+    FOREIGN KEY (CodBarrio) REFERENCES Barrio(CodBarrio);
 );
 ```
 
@@ -73,7 +73,7 @@ SELECT
 FROM
     Producto
 INNER JOIN Marca ON Producto.CodMarca = Marca.CodMarca
-WHERE
+WkHERE
     Producto.Stock < 5
 ORDER BY
     Marca.Nombre ASC,
