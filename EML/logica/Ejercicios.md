@@ -12,16 +12,18 @@
 
     f.  $\neg p \land (q \vee r) = V$
 
-3. Suponga que $a,\ b$ y $c$ son números reales. Represente en forma simbólica los enunciados dados tomando: $p:\ a < b,\ q:b < c,\ r:a < c$
+3. Suponga que $a, b$ y $c$ son números reales. Represente en forma simbólica los enunciados dados tomando: $p: a < b$, $q: b < c$, $r: a < c$
 
-    a.  $a < b < c$
-		$p \land q$
+---
 
-    b.  $(a \geq b\ y\ b < c)\ o\ a < c$
-		$(\neg p \land q) /vee r$
+* **a. $a < b < c$**
+    * $p \land q$
 
-    c.  No es cierto que $(a < b\ y\ a < c)$
-		$\neg(p \land r)$
+* **b. $(a \geq b\ y\ b < c)\ o\ a < c$**
+    * $(\neg p \land q) \vee r$
 
-    d.  (No es cierto que $\left( a < b\ y\ (a < c\ o\ b < c) \right)$) o $(a \geq b\ y\ b < c)$
-		$\neg(p \land(r \vee q))\land(\neg p \vee q)$
+* **c. No es cierto que $(a < b\ y\ a < c)$**
+    * $\neg(p \land r)$
+
+* **d. (No es cierto que $(a < b\ y\ (a < c\ o\ b < c))$) o $(a \geq b\ y\ b < c)$**
+    * $\neg(p \land (r \vee q)) \vee (\neg p \land q)$
